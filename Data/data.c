@@ -45,24 +45,47 @@ void loadData(void)
             int fields;
 
             /* Current format: ID|username|name|telephone|password|balance|active */
-            fields = sscanf(line, "%d|%19[^|]|%49[^|]|%19[^|]|%19[^|]|%lf|%d",
+            /* New format also stores membership tier and coupon counts. */
+            fields = sscanf(line,
+                            "%d|%19[^|]|%49[^|]|%19[^|]|%19[^|]|%lf|%d|%d|%d|%d|%d",
                             &u.userID, u.username, u.name, u.telephone,
-                            u.password, &u.balance, &u.active);
+                            u.password, &u.balance, &u.active, &u.membershipTier,
+                            &u.classicPizzaCoupons, &u.pepperoniPizzaCoupons,
+                            &u.snackCoupons);
 
-            if (fields == 7)
+            if (fields == 11)
             {
                 users[userCount++] = u;
             }
             else
             {
-                /* Compatibility with files created by the previous version. */
-                fields = sscanf(line, "%d %49s %19s %19s %lf %d",
-                                &u.userID, u.name, u.telephone, u.password,
-                                &u.balance, &u.active);
-                if (fields == 6)
+                /* Compatibility with older pipe-separated user records. */
+                fields = sscanf(line, "%d|%19[^|]|%49[^|]|%19[^|]|%19[^|]|%lf|%d",
+                                &u.userID, u.username, u.name, u.telephone,
+                                u.password, &u.balance, &u.active);
+                if (fields == 7)
                 {
-                    snprintf(u.username, sizeof(u.username), "user%d", u.userID);
+                    u.membershipTier = 0;
+                    u.classicPizzaCoupons = 0;
+                    u.pepperoniPizzaCoupons = 0;
+                    u.snackCoupons = 0;
                     users[userCount++] = u;
+                }
+                else
+                {
+                    /* Compatibility with files created by the earliest version. */
+                    fields = sscanf(line, "%d %49s %19s %19s %lf %d",
+                                    &u.userID, u.name, u.telephone, u.password,
+                                    &u.balance, &u.active);
+                    if (fields == 6)
+                    {
+                        snprintf(u.username, sizeof(u.username), "user%d", u.userID);
+                        u.membershipTier = 0;
+                        u.classicPizzaCoupons = 0;
+                        u.pepperoniPizzaCoupons = 0;
+                        u.snackCoupons = 0;
+                        users[userCount++] = u;
+                    }
                 }
             }
         }
@@ -85,19 +108,30 @@ void loadData(void)
     fp = fopen("orders.txt", "r");
     if (fp != NULL)
     {
-        while (orderCount < MAX_ORDERS &&
-               fscanf(fp, "%d %d %d %49s %29s %d %29s %d %lf %d",
-                      &orders[orderCount].orderID,
-                      &orders[orderCount].userID,
-                      &orders[orderCount].productID,
-                      orders[orderCount].productName,
-                      orders[orderCount].crust,
-                      &orders[orderCount].size,
-                      orders[orderCount].topping,
-                      &orders[orderCount].quantity,
-                      &orders[orderCount].unitPrice,
-                      &orders[orderCount].status) == 10)
-            orderCount++;
+        while (orderCount < MAX_ORDERS && fgets(line, sizeof(line), fp) != NULL)
+        {
+            Order o;
+            int fields = sscanf(line, "%d %d %d %49s %29s %d %29s %d %lf %d %lf %29s",
+                                &o.orderID, &o.userID, &o.productID,
+                                o.productName, o.crust, &o.size, o.topping,
+                                &o.quantity, &o.unitPrice, &o.status,
+                                &o.totalPaid, o.reward);
+            if (fields == 12)
+                orders[orderCount++] = o;
+            else
+            {
+                fields = sscanf(line, "%d %d %d %49s %29s %d %29s %d %lf %d",
+                                &o.orderID, &o.userID, &o.productID,
+                                o.productName, o.crust, &o.size, o.topping,
+                                &o.quantity, &o.unitPrice, &o.status);
+                if (fields == 10)
+                {
+                    o.totalPaid = o.unitPrice * o.quantity;
+                    strcpy(o.reward, "None");
+                    orders[orderCount++] = o;
+                }
+            }
+        }
         fclose(fp);
     }
 
@@ -118,10 +152,12 @@ void saveUsers(void)
 
     for (i = 0; i < userCount; i++)
     {
-        fprintf(fp, "%d|%s|%s|%s|%s|%.2f|%d\n",
+        fprintf(fp, "%d|%s|%s|%s|%s|%.2f|%d|%d|%d|%d|%d\n",
                 users[i].userID, users[i].username, users[i].name,
                 users[i].telephone, users[i].password,
-                users[i].balance, users[i].active);
+                users[i].balance, users[i].active, users[i].membershipTier,
+                users[i].classicPizzaCoupons, users[i].pepperoniPizzaCoupons,
+                users[i].snackCoupons);
     }
     fclose(fp);
 }
@@ -155,12 +191,13 @@ void saveOrders(void)
 
     for (i = 0; i < orderCount; i++)
     {
-        fprintf(fp, "%d %d %d %s %s %d %s %d %.2f %d\n",
+        fprintf(fp, "%d %d %d %s %s %d %s %d %.2f %d %.2f %s\n",
                 orders[i].orderID, orders[i].userID,
                 orders[i].productID, orders[i].productName,
                 orders[i].crust, orders[i].size,
                 orders[i].topping, orders[i].quantity,
-                orders[i].unitPrice, orders[i].status);
+                orders[i].unitPrice, orders[i].status,
+                orders[i].totalPaid, orders[i].reward);
     }
     fclose(fp);
 }

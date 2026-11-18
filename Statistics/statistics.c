@@ -11,7 +11,7 @@ void displaySalesStatistics(void)
         {
             qty += orders[i].quantity;
             count++;
-            revenue += orders[i].unitPrice * orders[i].quantity;
+            revenue += orders[i].totalPaid;
         }
     puts("\n======= SALES STATISTICS =======");
     printf("Number of order records: %d\nTotal pizzas sold: %d\nTotal revenue: $%.2f\n", count, qty, revenue);
