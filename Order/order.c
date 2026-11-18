@@ -181,6 +181,7 @@ void placeOrder(int n)
     if (strcmp(reward, "None") != 0)
         printf("Reward applied: %s\n", reward);
 }
+
 void displayOrderHistory(int id)
 {
     int i, found = 0;
@@ -197,6 +198,7 @@ void displayOrderHistory(int id)
     if (!found)
         puts("No order history yet.");
 }
+
 void displayAllOrders(void)
 {
     int i;

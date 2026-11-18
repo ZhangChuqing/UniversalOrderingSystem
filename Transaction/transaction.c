@@ -1,12 +1,14 @@
 #include <stdio.h>
 #include "../Data/data.h"
 #include "transaction.h"
+
 int checkBalance(int n, double amount)
 {
     if (n < 0 || n >= userCount || amount < 0)
         return 0;
     return users[n].balance >= amount;
 }
+
 int depositMoney(int n, double amount)
 {
     if (n < 0 || n >= userCount)
@@ -82,6 +84,7 @@ int processPayment(int n, double amount)
     printf("Payment successful. Remaining balance: $%.2f\n", users[n].balance);
     return 1;
 }
+
 void displayBalance(int n)
 {
     if (n >= 0 && n < userCount)

@@ -26,7 +26,7 @@ void customerMenu(int n)
         switch (c)
         {
         case 1:
-            displayProductList();
+            placeOrder(n);
             break;
 
         case 2:

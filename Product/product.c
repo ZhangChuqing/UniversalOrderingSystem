@@ -10,6 +10,7 @@ int findProduct(int id)
             return i;
     return -1;
 }
+
 void displayProductList(void)
 {
     int i;
@@ -21,6 +22,7 @@ void displayProductList(void)
     puts("Crusts: Thin / Regular / Thick");
     puts("Toppings: None / ExtraCheese / Mushroom / Olive");
 }
+
 void addProduct(void)
 {
     Product p;
