@@ -88,6 +88,7 @@ void placeOrder(int n)
     saveOrders();
     printf("Order confirmed. Order number: %d\n", oid);
 }
+
 void displayOrderHistory(int id)
 {
     int i, found = 0;
@@ -101,6 +102,7 @@ void displayOrderHistory(int id)
     if (!found)
         puts("No order history yet.");
 }
+
 void displayAllOrders(void)
 {
     int i;

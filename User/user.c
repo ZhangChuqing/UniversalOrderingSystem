@@ -88,11 +88,13 @@ int loginUser(void)
     puts("Invalid username or password.");
     return -1;
 }
+
 void displayUser(int n)
 {
     if (n >= 0 && n < userCount)
         printf("\nAccount: %d\nUsername: %s\nName: %s\nTelephone: %s\nBalance: $%.2f\n", users[n].userID, users[n].username, users[n].name, users[n].telephone, users[n].balance);
 }
+
 void displayUserList(void)
 {
     int i;
@@ -101,6 +103,7 @@ void displayUserList(void)
         if (users[i].active)
             printf("%d | %s | %s | %s | $%.2f\n", users[i].userID, users[i].username, users[i].name, users[i].telephone, users[i].balance);
 }
+
 void editUser(int n)
 {
     if (n < 0 || n >= userCount || !users[n].active)
@@ -112,6 +115,7 @@ void editUser(int n)
     saveUsers();
     puts("Customer updated.");
 }
+
 void deleteUser(int n)
 {
     if (n < 0 || n >= userCount || !users[n].active)

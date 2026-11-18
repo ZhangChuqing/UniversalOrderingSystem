@@ -4,6 +4,7 @@
 #include "../Order/order.h"
 #include "../Statistics/statistics.h"
 #include "manager_ui.h"
+
 void managerMenu(void)
 {
     int c, id, n;
