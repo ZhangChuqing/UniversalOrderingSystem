@@ -60,6 +60,10 @@ int registerUser(void)
 
     u.balance = 0;
     u.active = 1;
+    u.membershipTier = 0;
+    u.classicPizzaCoupons = 0;
+    u.pepperoniPizzaCoupons = 0;
+    u.snackCoupons = 0;
 
     users[userCount] = u;
     userCount++;
@@ -90,8 +94,25 @@ int loginUser(void)
 }
 void displayUser(int n)
 {
-    if (n >= 0 && n < userCount)
-        printf("\nAccount: %d\nUsername: %s\nName: %s\nTelephone: %s\nBalance: $%.2f\n", users[n].userID, users[n].username, users[n].name, users[n].telephone, users[n].balance);
+    double discount;
+    if (n < 0 || n >= userCount)
+        return;
+
+    discount = users[n].membershipTier == 3 ? 15.0 :
+               users[n].membershipTier == 2 ? 12.0 :
+               users[n].membershipTier == 1 ? 10.0 : 0.0;
+
+    printf("\nAccount: %d\nUsername: %s\nName: %s\nTelephone: %s\nBalance: $%.2f\n",
+           users[n].userID, users[n].username, users[n].name,
+           users[n].telephone, users[n].balance);
+    printf("Membership tier: %s\n",
+           users[n].membershipTier == 3 ? "Gold ($500)" :
+           users[n].membershipTier == 2 ? "Silver ($200)" :
+           users[n].membershipTier == 1 ? "Bronze ($100)" : "None");
+    printf("Membership discount: %.0f%%\n", discount);
+    printf("Coupons: Classic Cheese x%d | Pepperoni x%d | Snack x%d\n",
+           users[n].classicPizzaCoupons, users[n].pepperoniPizzaCoupons,
+           users[n].snackCoupons);
 }
 void displayUserList(void)
 {
@@ -99,7 +120,9 @@ void displayUserList(void)
     puts("\n--- Customers ---");
     for (i = 0; i < userCount; i++)
         if (users[i].active)
-            printf("%d | %s | %s | %s | $%.2f\n", users[i].userID, users[i].username, users[i].name, users[i].telephone, users[i].balance);
+            printf("%d | %s | %s | %s | Balance $%.2f | Tier %d\n",
+                   users[i].userID, users[i].username, users[i].name,
+                   users[i].telephone, users[i].balance, users[i].membershipTier);
 }
 void editUser(int n)
 {

@@ -16,6 +16,10 @@ typedef struct
     char password[20];
     double balance;
     int active;
+    int membershipTier;          /* 0 = none, 1 = $100, 2 = $200, 3 = $500 */
+    int classicPizzaCoupons;
+    int pepperoniPizzaCoupons;
+    int snackCoupons;
 } User;
 
 
@@ -37,5 +41,7 @@ typedef struct
     int quantity;
     double unitPrice;
     int status;
+    double totalPaid;
+    char reward[MAX_TEXT];
 } Order;
 #endif
